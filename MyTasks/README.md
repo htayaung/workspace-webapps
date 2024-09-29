@@ -17,12 +17,7 @@ This is a demo project using the following technologies.
 
 
 ## Screenshots
-
-
-
-https://user-images.githubusercontent.com/13251420/236626902-360245c3-411b-407c-87c6-d21b1fa8aed8.mp4
-
-
+https://github.com/user-attachments/assets/093bf563-926d-406b-9d97-87192e803381
 
 <p align="center">
   <img src="./assets/01.png" alt="MyTasks"/>
