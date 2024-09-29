@@ -25,6 +25,7 @@ To get started with any of the applications, follow these steps:
 2. **Navigate to the desired project directory**:
    ```bash
    cd project-directory
+   cd src
 3. **Restore dependencies** (if applicable):
    ```bash
    dotnet restore
@@ -38,6 +39,7 @@ Make sure you have .NET SDK installed on your machine.
 Here are some of the web applications and Web APIs included in this repository:
 * [Personal Expense Tracker](https://github.com/htayaung/workspace-webapps/tree/main/PersonalExpenseTracker)
 * [OpenAI Integration](https://github.com/htayaung/workspace-webapps/tree/main/OpenAIIntegration)
+* [MyTasks](https://github.com/htayaung/workspace-webapps/tree/main/MyTasks)
 * UtilSuite
 
 Feel free to explore each project and check out the individual README files for more detailed information.
