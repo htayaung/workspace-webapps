@@ -1,0 +1,198 @@
+﻿@page "/"
+@using System.Text;
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Home</PageTitle>
+
+<div class="p-5 mb-4 text-bg-dark rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold text-center">Random Password Generator</h1>
+        <p class="fs-4 text-center">Create strong and secure passwords</p>
+    </div>
+</div>
+
+<div class="bg-body-tertiary">
+    <div class="row p-3">
+        <div class="col-md-6 col-sm-12">
+            <label class="form-label">Generated Password</label>
+            <div class="input-group">
+                <InputText id="generatedPassword"
+                           class="form-control"
+                           maxlength="@MaxGeneratedPasswordLength"
+                @bind-Value="GeneratedPassword" />
+                <button class="btn" type="button" @onclick="Generate">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+            </div>
+            <span class="badge text-bg-@StatusClass">@Status</span>
+        </div>
+    </div>
+    <div class="row p-3">
+        <div class="col-md-6 col-sm-12">
+            <div class="mb-3">
+                <label for="passwordLength" class="form-label">Password Length <span class="badge bg-secondary">@PasswordLength</span></label>
+                <input id="passwordLength"
+                       type="range"
+                @bind-value="PasswordLength"
+                       class="form-range"
+                       min="@MinPasswordLength"
+                       max="@MaxPasswordLength"
+                       step="1"
+                @bind-value:after="Generate">
+            </div>
+        </div>
+    </div>
+    <div class="row p-3">
+        <label class="form-label">Characters included</label>
+        <div class="col-6">
+            <div class="form-check form-check-inline">
+                <InputCheckbox id="characters"
+                               class="form-check-input"
+                @bind-Value="IncludeCharacters"
+                @oninput="CharactersCheckboxChanged" />
+                <label class="form-check-label" for="characters">ABCabc</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputCheckbox id="numbers"
+                               class="form-check-input"
+                @bind-Value="IncludeNumbers"
+                @oninput="NumbersCheckboxChanged" />
+                <label class="form-check-label" for="numbers">123</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputCheckbox id="specialCharacters"
+                               class="form-check-input"
+                @bind-Value="IncludeSpecialCharacters"
+                @oninput="SpecialCharactersCheckboxChanged" />
+                <label class="form-check-label" for="specialCharacters">#$&</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private const int MIN_PASSWORD_LENGTH = 1;
+    private const int MAX_PASSWORD_LENGTH = 60;
+    private const string LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const string NUMBERS = "0123456789";
+    private const string SPECIAL_CHARACTERS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+
+    public string GeneratedPassword { get; set; } = string.Empty;
+
+    public int MinPasswordLength { get; set; }
+    public int MaxPasswordLength { get; set; }
+    public int MaxGeneratedPasswordLength { get; } = 64;
+    public int PasswordLength { get; set; }
+    public bool IncludeCharacters { get; set; }
+    public bool IncludeNumbers { get; set; }
+    public bool IncludeSpecialCharacters { get; set; }
+    public string CliboardIcon { get; set; } = "bi bi-clipboard";
+
+    public string Status { get; set; } = string.Empty;
+    public string StatusClass { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        MinPasswordLength = MIN_PASSWORD_LENGTH;
+        MaxPasswordLength = MAX_PASSWORD_LENGTH;
+        PasswordLength = 15;
+
+        IncludeCharacters = true;
+        IncludeNumbers = true;
+        IncludeSpecialCharacters = true;
+
+        Generate();
+    }
+
+    private void ValidateInput()
+    {
+        if (MinPasswordLength < MIN_PASSWORD_LENGTH || MinPasswordLength > MAX_PASSWORD_LENGTH)
+        {
+            throw new ArgumentException("Minimum password length is invalid.");
+        }
+
+        if (MaxPasswordLength < MIN_PASSWORD_LENGTH || MaxPasswordLength > MAX_PASSWORD_LENGTH)
+        {
+            throw new ArgumentException("Maximum password length is invalid.");
+        }
+
+        if (MinPasswordLength > MaxPasswordLength)
+        {
+            throw new ArgumentException("Password length is invalid.");
+        }
+
+        if (!IncludeCharacters && !IncludeNumbers && !IncludeSpecialCharacters)
+        {
+            IncludeCharacters = true;
+        }
+    }
+
+    private void Generate()
+    {
+        ValidateInput();
+
+        string chars = "";
+        if (IncludeCharacters)
+            chars += LETTERS;
+
+        if (IncludeNumbers)
+            chars += NUMBERS;
+
+        if (IncludeSpecialCharacters)
+            chars += SPECIAL_CHARACTERS;
+
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+
+        for (int i = 0; i < PasswordLength; i++)
+        {
+            int index = rnd.Next(chars.Length);
+            sb.Append(chars[index]);
+        }
+
+        GeneratedPassword = sb.ToString();
+        SetStatus();
+    }
+
+    private void SetStatus()
+    {
+        if (PasswordLength < 5)
+        {
+            Status = "Very weak";
+            StatusClass = "danger";
+        }
+        else if (PasswordLength < 10)
+        {
+            Status = "Weak";
+            StatusClass = "danger";
+        }
+        else if (PasswordLength < 15)
+        {
+            Status = "Strong";
+            StatusClass = "success";
+        }
+        else
+        {
+            Status = "Very strong";
+            StatusClass = "success";
+        }
+    }
+
+    private void CharactersCheckboxChanged(ChangeEventArgs e)
+    {
+        IncludeCharacters = Convert.ToBoolean(e.Value);
+        Generate();
+    }
+
+    private void NumbersCheckboxChanged(ChangeEventArgs e)
+    {
+        IncludeNumbers = Convert.ToBoolean(e.Value);
+        Generate();
+    }
+
+    private void SpecialCharactersCheckboxChanged(ChangeEventArgs e)
+    {
+        IncludeSpecialCharacters = Convert.ToBoolean(e.Value);
+        Generate();
+    }
+}
