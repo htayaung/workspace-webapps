@@ -8,7 +8,7 @@
 * [OpenAI](https://github.com/OkGoDoIt/OpenAI-API-dotnet)
 
 ## Screenshots
-https://user-images.githubusercontent.com/13251420/232319356-88794aa3-942f-46bb-bee8-55d417913cc8.mp4
+https://github.com/user-attachments/assets/e17e223d-653f-4b3d-b8a0-e5d019a6b5d8
 
 <br/>
 <p align="center">
