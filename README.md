@@ -36,7 +36,7 @@ Make sure you have .NET SDK installed on your machine.
 ## Project List
 
 Here are some of the web applications and Web APIs included in this repository:
+* [Personal Expense Tracker](https://github.com/htayaung/workspace-webapps/tree/main/PersonalExpenseTracker)
 * UtilSuite
-* Personal Expense Tracker
 
 Feel free to explore each project and check out the individual README files for more detailed information.
