@@ -40,6 +40,6 @@ Here are some of the web applications and Web APIs included in this repository:
 * [Personal Expense Tracker](https://github.com/htayaung/workspace-webapps/tree/main/PersonalExpenseTracker)
 * [OpenAI Integration](https://github.com/htayaung/workspace-webapps/tree/main/OpenAIIntegration)
 * [MyTasks](https://github.com/htayaung/workspace-webapps/tree/main/MyTasks)
-* UtilSuite
+* [UtilSuite](https://github.com/htayaung/workspace-webapps/tree/main/UtilSuite)
 
 Feel free to explore each project and check out the individual README files for more detailed information.
