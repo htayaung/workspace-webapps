@@ -11,17 +11,22 @@ This project demonstrates a decoupled and maintainable design, with a repository
 ![Application Architecture](assets/ApplicationArchitecture.png)
 
 ## Getting Started
-1. **Clone the repository**: `git clone https://github.com/htayaung/dotnetcore_webapi_starter.git
-2. **Install dependencies**: dotnet restore
-3. **Create a new database in SQL Express**:
+1. **Clone the repository**: 
+   ```bash
+   git clone https://github.com/htayaung/workspace-webapps.git
+2. ```bash
+   cd workspace-webapps
+   cd ContactManager
+4. **Install dependencies**: dotnet restore
+5. **Create a new database in SQL Express**:
     * Open SQL Server Management Studio (SSMS)
     * Connect to your local SQL Express instance
     * Create a new database named "ContactManager"
-4. **Run the table creation scripts**:
+6. **Run the table creation scripts**:
     * Navigate to the Infrastructure/Scripts folder
     * Execute the scripts
-5. **Update the connection string**: In the appsettings.json file, update the "DefaultConnection" string to point to your newly created database
-6. **Run the application**: dotnet run
-7. **Access Swagger UI**: https://localhost:7271/swagger/index.html
+7. **Update the connection string**: In the appsettings.json file, update the "DefaultConnection" string to point to your newly created database
+8. **Run the application**: dotnet run
+9. **Access Swagger UI**: https://localhost:7271/swagger/index.html
 
 ![Application Architecture](assets/SwaggerUI.png)
