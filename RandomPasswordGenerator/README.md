@@ -14,6 +14,7 @@ A simple yet powerful web application built with .NET 7 and Blazor that generate
 * Blazor
 
 ## Screenshots
+https://github.com/user-attachments/assets/ea64e000-980f-4b25-a5ea-3d6e3e6dd1d5
 
 <br/>
 <p align="center">
