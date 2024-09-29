@@ -42,5 +42,6 @@ Here are some of the web applications and Web APIs included in this repository:
 * [MyTasks](https://github.com/htayaung/workspace-webapps/tree/main/MyTasks)
 * [UtilSuite](https://github.com/htayaung/workspace-webapps/tree/main/UtilSuite)
 * [RandomPasswordGenerator](https://github.com/htayaung/workspace-webapps/tree/main/RandomPasswordGenerator)
+* [ContactManager](https://github.com/htayaung/workspace-webapps/tree/main/ContactManager)
 
 Feel free to explore each project and check out the individual README files for more detailed information.
