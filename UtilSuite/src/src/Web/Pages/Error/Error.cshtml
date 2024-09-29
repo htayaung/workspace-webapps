@@ -1,0 +1,31 @@
+﻿@page "/Error"
+@using Microsoft.AspNetCore.Identity
+@using global::Infrastructure.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@model ErrorModel
+@{
+    if (SignInManager.IsSignedIn(User))
+    {
+        Layout = "_Layout";
+    }
+    else
+    {
+        Layout = "_PublicLayout";
+    }
+    ViewData["Title"] = "Error";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center">
+                <h1 class="text-danger">Error.</h1>
+                <h2 class="text-danger">An error occurred while processing your request.</h2>
+                <a class="btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0" asp-page="/Index" asp-area="" role="button">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+﻿IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE type = 'U' AND name = 'ShortLink')
+BEGIN
+	CREATE TABLE dbo.ShortLink
+	(
+		[Id] UNIQUEIDENTIFIER PRIMARY KEY,
+		[Url] NVARCHAR(3000) NOT NULL,
+		[ShortenedUrl] VARCHAR(1024) NOT NULL,
+		[Token] VARCHAR(16) NOT NULL,
+		[Clicked] INT NOT NULL,
+		[IsActive] BIT NOT NULL,
+		[Created] DATETIME NOT NULL,
+		[CreatedBy] UNIQUEIDENTIFIER NOT NULL,
+		[LastModified] DATETIME NULL,
+		[LastModifiedBy] UNIQUEIDENTIFIER NULL
+	)
+END
+GO
+

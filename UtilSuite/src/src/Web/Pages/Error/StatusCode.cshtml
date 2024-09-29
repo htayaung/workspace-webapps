@@ -1,0 +1,53 @@
+﻿@page "/StatusCode"
+@using Microsoft.AspNetCore.Identity
+@using global::Infrastructure.Identity
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@model Web.Pages.Error.StatusCodeModel
+@{
+    if (SignInManager.IsSignedIn(User))
+    {
+        Layout = "_Layout";
+    }
+    else
+    {
+        Layout = "_PublicLayout";
+    }
+    ViewData["Title"] = "Error";
+}
+
+@if (Model.StatusCode == 404)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <h2 class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                        <span class="display-1 fw-bold">404</span>
+                    </h2>
+                    <h3 class="h2 mb-2">Oops!</h3>
+                    <p class="mb-5">The page you are looking for was not found.</p>
+                    <a class="btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0" asp-page="/Index" asp-area="" role="button">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <h2 class="d-flex justify-content-center align-items-center gap-2 mb-4">
+                        <span class="display-1 fw-bold">Error</span>
+                    </h2>
+                    <p class="mb-5">An error has occurred while processing your request.</p>
+                    <a class="btn bsb-btn-5xl btn-dark rounded-pill px-5 fs-6 m-0" asp-page="/Index" asp-area="" role="button">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

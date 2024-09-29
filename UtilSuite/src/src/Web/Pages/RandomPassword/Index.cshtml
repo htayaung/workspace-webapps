@@ -1,0 +1,62 @@
+﻿@page
+@model Web.Pages.RandomPassword.IndexModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Random Password Generator";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label id="lblPasswordLength" asp-for="Input.PasswordLength" class="form-label"></label><span id="passwordLengthBadge" class="ml-2 badge bg-secondary">@Model.Input.PasswordLength</span>
+                            <input type="range" id="passwordLength" asp-for="Input.PasswordLength" class="form-control" min="@Model.Input.MinPasswordLength" max="@Model.Input.MaxPasswordLength" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Characters included</label>
+                            <div class="form-inline">
+                                <div class="form-check mr-3">
+                                    <input id="chkIncludeCharacters" class="form-check-input included-characters" type="checkbox" asp-for="@Model.Input.IncludeCharacters">
+                                    <label class="form-check-label" asp-for="@Model.Input.IncludeCharacters"></label>
+                                </div>
+                                <div class="form-check mr-3">
+                                    <input id="chkIncludeNumbers" class="form-check-input included-characters" type="checkbox" asp-for="@Model.Input.IncludeNumbers">
+                                    <label class="form-check-label" asp-for="@Model.Input.IncludeNumbers"></label>
+                                </div>
+                                <div class="form-check">
+                                    <input id="chkIncludeSpecialCharacters" class="form-check-input included-characters" type="checkbox" asp-for="@Model.Input.IncludeSpecialCharacters">
+                                    <label class="form-check-label" asp-for="@Model.Input.IncludeSpecialCharacters"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="mb-3">
+                            <label for="#password" class="form-label">Generated Password</label><span id="passwordStatus" class="ml-2 badge bg-primary"></span>
+                            <input type="text" id="password" class="form-control-plaintext" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script src="~/dist/js/random-password-generator.min.js"></script>
+}

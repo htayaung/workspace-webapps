@@ -1,0 +1,60 @@
+﻿@page "/Login"
+@model LoginModel
+
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Log in";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <p class="text-center">Log in</p>
+                <form id="account" method="post">
+                    <div asp-validation-summary="ModelOnly" class="callout callout-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Input.Email" class="form-label">Email</label>
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Password" class="form-label">Password</label>
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-primary">Log in</button>
+                </form>
+                <div class="row">
+                    <div class="col-12">
+                        <hr class="mt-5 mb-4 border-secondary-subtle">
+                        <div class="text-end">
+                            <a id="forgot-password" class="link-secondary text-decoration-none" asp-page="/Account/ForgotPassword">Forgot your password?</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <p class="mt-5 mb-4">Or sign in with demo account</p>
+                        <div class="d-flex gap-3 flex-column flex-xl-row">
+                            <form id="loginAsDemo" method="post">
+                                <button type="submit" asp-page-handler="LoginAsAdministrator" class="btn bsb-btn-xl btn-outline-primary">
+                                    <i class="fa fa-user mr-2"></i>
+                                    <span class="ms-2 fs-6">Administrator</span>
+                                </button>
+                                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <partial name="_LoginAnnouncementPartial" model="Model.List.Items.ToList()" />
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

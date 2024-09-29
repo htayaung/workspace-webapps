@@ -1,0 +1,72 @@
+﻿@page
+@model IndexModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Home";
+}
+
+<div class="row">
+    <div class="col-lg-4 col-12">
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>Short URLs</h3>
+
+                <p>To shorterned URL</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <a asp-page="/ShortUrls/Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-12">
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>Announcements</h3>
+
+                <p>To manage announcements</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-bullhorn"></i>
+            </div>
+            <a asp-page="/Announcements/Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-12">
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>QR Code</h3>
+
+                <p>Generate QR Code</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-qrcode"></i>
+            </div>
+            <a asp-page="/QRCodes/Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-12">
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>Random Password</h3>
+
+                <p>Generate random password</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <a asp-page="/RandomPassword/Index" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+</div>

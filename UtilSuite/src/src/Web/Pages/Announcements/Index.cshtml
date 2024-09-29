@@ -1,0 +1,115 @@
+﻿@page
+@using Application.Common.Utility
+@using System.Web
+@model Web.Pages.Announcements.IndexModel
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <div class="d-flex">
+                    <h1 class="m-0">@ViewData["Title"]</h1>
+                    <a class="btn btn-sm btn-primary mx-3" asp-page="./Create" role="button">Create New</a>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <form asp-page="./Index" method="get" class="form-inline float-sm-right">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control" type="text" name="searchString" placeholder="Search" aria-label="Search" value="@Model.CurrentFilter">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-sm"><i class="fas fa-search"></i></button>
+                            <a asp-page="./Index" class="btn btn-sm"><i class="fas fa-times"></i></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Is Public</th>
+                                <th scope="col">Last Modified Date</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.HasData)
+                            {
+                                @foreach (var item in Model.List.Items.Select((value, i) => (value, i)))
+                                {
+                                    var serialNumber = (Model.List.PageNumber - 1) * Model.PageSize + 1 + item.i;
+                                    <tr>
+                                        <td>@serialNumber</td>
+                                        <td>@Html.DisplayFor(x => item.value.Name)</td>
+                                        <td>@Html.DisplayFor(x => item.value.IsPublic)</td>
+                                        <td>@item.value.LastUpdatedDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                        <td>
+                                            <div class="btn-group me-2">
+                                                <a class="btn btn-sm btn-outline-secondary"
+                                                   asp-page="./Edit"
+                                                   asp-route-id="@EncryptDecryptHelper.EncryptByAes(item.value.Id.ToString(), Model.UserId.ToString())"
+                                                   role="button">
+                                                    Edit
+                                                </a>
+                                                <a class="btn btn-sm btn-outline-secondary"
+                                                   asp-page="./Details"
+                                                   asp-route-id="@EncryptDecryptHelper.EncryptByAes(item.value.Id.ToString(), Model.UserId.ToString())"
+                                                   role="button">
+                                                    Details
+                                                </a>
+                                                <a class="btn btn-sm btn-outline-secondary"
+                                                   asp-page="./Delete"
+                                                   asp-route-id="@EncryptDecryptHelper.EncryptByAes(item.value.Id.ToString(), Model.UserId.ToString())"
+                                                   role="button">
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="text-center">
+                                    <td colspan="6">No matching records found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if (Model.HasData)
+            {
+                <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-right">
+                        @if (Model.List.HasPreviousPage)
+                        {
+                            <li class="page-item">
+                                <a asp-page="/Announcements/Index" asp-route-pageIndex="@(Model.List.PageNumber-1)" class="page-link">Previous «</a>
+                            </li>
+                        }
+                        @if (Model.List.HasNextPage)
+                        {
+                            <li class="page-item">
+                                <a asp-page="/Announcements/Index" asp-route-pageIndex="@(Model.List.PageNumber + 1)" class="page-link">Next »</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</div>
