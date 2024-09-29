@@ -1,0 +1,152 @@
+﻿@page "/columns"
+@attribute [Authorize]
+@inherits AuthBaseComponent
+@using MyTasks.Models.ViewModels
+@inject IDialogService DialogService
+
+<PageTitle>Columns</PageTitle>
+
+<MudGrid>
+    <MudItem lg="8">
+        <MudTable Items="@Columns"
+                  Dense="@dense"
+                  Hover="@hover"
+                  Bordered="@bordered"
+                  Striped="@striped"
+                  @bind-SelectedItem="SelectedColumn">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Manage Columns</MudText>
+                <MudFab Color="Color.Secondary"
+                        Class="ml-4"
+                        StartIcon="@Icons.Material.Filled.Add"
+                        Size="Size.Small"
+                        OnClick="OnCreateClick" />
+                <MudSpacer />
+            </ToolBarContent>
+            <ColGroup>
+                <col style="width: 5%;" />
+                <col style="width: 50%;" />
+                <col />
+                <col style="width: 20%;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Position</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Color</MudTh>
+                <MudTh Class="align-md-end"></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Position">@context.Position</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Color">@context.Color</MudTd>
+                <MudTd Class="align-md-end">
+                    <MudFab Class="mr-2"
+                            StartIcon="@Icons.Material.Filled.Edit"
+                            Size="Size.Small"
+                            @onclick="()=>OnEditClick(context)" />
+                    <MudFab StartIcon="@Icons.Material.Filled.Delete"
+                            Size="Size.Small"
+                            @onclick="()=>OnDeleteClick(context)" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+    <MudItem lg="4">
+        <SaveColumn OnSubmitCallback="Refresh"
+                    Column="SelectedColumn"
+                    SetFocus="SetFocusOnChildComponent" />
+    </MudItem>
+</MudGrid>
+
+
+@code {
+
+    #region Variables
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+
+    private IList<TaskColumnViewModel> Columns = new List<TaskColumnViewModel>();
+    private TaskColumnViewModel SelectedColumn = new();
+    private bool SetFocusOnChildComponent = false;
+
+    #endregion
+
+    #region Events
+
+    protected async override Task OnInitializedAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            await LoadData();
+        });
+    }
+
+    private void OnCreateClick()
+    {
+        SelectedColumn = new();
+        SetFocusOnChildComponent = true;
+    }
+
+    private void OnEditClick(TaskColumnViewModel column)
+    {
+        SelectedColumn = column;
+        SetFocusOnChildComponent = true;
+    }
+
+    private async Task OnDeleteClick(TaskColumnViewModel column)
+    {
+        SelectedColumn = column;
+
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Do you really want to delete this record?");
+        parameters.Add("ButtonText", "Delete");
+        parameters.Add("Color", Color.Error);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = DialogService.Show<DialogBox>("Delete", parameters, options);
+        var result = await dialog.Result;
+        await DeleteDialogCallback(!result.Canceled);
+    }
+
+    #endregion
+
+    #region Methods & Functions
+
+    private async void Refresh()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        var columnModels = await UnitOfWork.TaskColumn.GetAsync(
+            filter: model => model.CreatedBy == UserId,
+            orderBy: model => model.OrderBy(model => model.Position));
+        Columns = new List<TaskColumnViewModel>();
+        foreach (var tag in columnModels)
+        {
+            Columns.Add(TaskColumnViewModel.FromEntity(tag));
+        }
+
+        SelectedColumn = new();
+        SetFocusOnChildComponent = false;
+        StateHasChanged();
+    }
+
+    private async Task DeleteDialogCallback(bool accepted)
+    {
+        if (accepted)
+        {
+            UnitOfWork.TaskColumn.Delete(SelectedColumn.Id, UserId);
+            await UnitOfWork.SaveAsync();
+            await LoadData();
+        }
+
+        StateHasChanged();
+    }
+
+    #endregion
+}

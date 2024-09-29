@@ -1,0 +1,38 @@
+﻿@using MyTasks.Models.ViewModels;
+@using ThreadTask = System.Threading.Tasks;
+
+<MudDialog>
+    <DialogContent>
+        <SaveTask SelectedTask="SelectedTask"
+                  OnButtonClickCallback="OnButtonClickCallback"></SaveTask>
+    </DialogContent>
+</MudDialog>
+
+
+@code {
+    #region Parameters
+    
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public TaskViewModel SelectedTask { get; set; }
+
+    #endregion
+
+    #region Events
+    
+    private void OnButtonClickCallback(bool isSubmitted)
+    {
+        if (isSubmitted)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            MudDialog.Cancel();
+        }
+    }
+
+    #endregion
+}

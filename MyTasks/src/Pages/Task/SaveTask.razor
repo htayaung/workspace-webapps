@@ -1,0 +1,159 @@
+﻿@using MyTasks.Models.ViewModels;
+@attribute [Authorize]
+@inherits AuthBaseComponent
+
+<EditForm Model="@task" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardContent>
+                    <div class="mb-3">
+                        <label for="name">Name*</label>
+                        <InputText id="name"
+                                   class="form-control"
+                                   @bind-Value="task.Name" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description">Description*</label>
+                        <TinyMCE.Blazor.Editor id="description"
+                                               Field="()=>task.Description"
+                                               @bind-Value="task.Description" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="columns">Column*</label>
+                        <InputSelect id="columns" class="form-select" @bind-Value="task.TaskColumnId">
+                            @foreach (var column in Columns)
+                            {
+                                <option value="@column.Id">@column.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tags">Tag</label>
+                        <InputSelect id="tags" class="form-select" @bind-Value="task.TaskTagId">
+                            @foreach (var tag in Tags)
+                            {
+                                <option value="@tag.Id">@tag.Name</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <InputCheckbox class="form-check-input" type="checkbox" role="switch" id="moveToArchive" @bind-Value="task.IsArchived"></InputCheckbox>
+                        <label class="form-check-label" for="moveToArchive">Move to archive</label>
+                    </div>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Button"
+                               OnClick="OnCancelClick"
+                               Class="ml-auto">Cancel</MudButton>
+
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary">Save</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+
+@code {
+    #region Parameters
+
+    [Parameter]
+    public TaskViewModel SelectedTask { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnButtonClickCallback { get; set; }
+
+    #endregion
+
+    #region Variables
+
+    private TaskViewModel task = new();
+
+    private IList<TaskColumnViewModel> Columns = new List<TaskColumnViewModel>();
+
+    private IList<TaskTagViewModel> Tags = new List<TaskTagViewModel>();
+
+    private bool IsNewRecord
+    {
+        get
+        {
+            return SelectedTask.Id == Guid.Empty;
+        }
+    }
+
+    #endregion
+
+    #region Events
+
+    protected async override Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task OnCancelClick()
+    {
+        await OnButtonClickCallback.InvokeAsync(false);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await ExecuteAsync(async () =>
+        {
+            if (IsNewRecord)
+            {
+                UnitOfWork.Task.Insert(task.ToEntity(), UserId);
+            }
+            else
+            {
+                UnitOfWork.Task.Update(task.ToEntity(), UserId);
+            }
+
+            UnitOfWork.Save();
+            StateHasChanged();
+
+            await OnButtonClickCallback.InvokeAsync(true);
+        });
+    }
+
+    #endregion
+
+    #region Methods & Functions
+
+    private async Task LoadData()
+    {
+        task = SelectedTask;
+        await LoadTaskColumns();
+        await LoadTaskTags();
+    }
+
+    private async Task LoadTaskColumns()
+    {
+        var columnModels = await UnitOfWork.TaskColumn.GetAsync(
+        filter: model => model.CreatedBy == UserId,
+        orderBy: model => model.OrderBy(model => model.Position));
+        Columns = TaskColumnViewModel.FromEntities(columnModels).ToList();
+
+        if (IsNewRecord)
+            task.TaskColumnId = Columns.First().Id;
+    }
+
+    private async Task LoadTaskTags()
+    {
+        var tags = await UnitOfWork.TaskTag.GetAsync(filter: model => model.CreatedBy == UserId);
+        Tags = TaskTagViewModel.FromEntities(tags).ToList();
+
+        // Empty model
+        Tags.Insert(0, new TaskTagViewModel());
+    }
+
+    #endregion
+}

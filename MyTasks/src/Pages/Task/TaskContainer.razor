@@ -1,0 +1,55 @@
+﻿@attribute [Authorize]
+@inherits AuthBaseComponent
+
+@using MyTasks.Models.ViewModels
+@using MyTasks.Utility
+
+<div class="jobs-container">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>
+
+
+@code {
+    #region Parameters
+
+    [Parameter]
+    public List<TaskViewModel> Tasks { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskViewModel> OnStatusUpdated { get; set; }
+
+    [Parameter]
+    public EventCallback<TaskViewModel> OnClickCallback { get; set; }
+
+    #endregion
+
+    #region Variables
+
+    public TaskViewModel Payload { get; set; }
+
+    #endregion
+
+    #region Methods & Functions
+
+    public async Task UpdateTaskAsync(Guid columnId)
+    {
+        var task = Tasks.SingleOrDefault(x => x.Id == Payload.Id);
+        if (task != null)
+        {
+            task.TaskColumnId = columnId;
+            task.UpdatedOn = DateTimeHelper.Now();
+
+            UnitOfWork.Task.Update(task.ToEntity(), UserId);
+            UnitOfWork.Save();
+
+            await OnStatusUpdated.InvokeAsync(Payload);
+        }
+    }
+
+    #endregion
+}

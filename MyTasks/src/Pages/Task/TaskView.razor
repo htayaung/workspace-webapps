@@ -1,0 +1,43 @@
+﻿@using MyTasks.Models.ViewModels;
+<li class="draggable" draggable="true" title="@TaskViewModel.Name" @ondragstart="@(() => HandleDragStart(TaskViewModel))" @onclick="@(()=>OnClick())">
+    <MudCard>
+        <MudCardContent>
+            <MudText Class="mb-5">@TaskViewModel.Name</MudText>
+            <small>Last Updated</small> @TaskViewModel.LastUpdatedOn.ToString("hh:mm.ss tt")
+        </MudCardContent>
+        @if (!string.IsNullOrEmpty(TaskViewModel.TagName))
+        {
+            <MudCardActions>
+                <MudIcon Icon="@Icons.Material.Filled.Label" Color="Color.Default" Size="Size.Small" />
+                <small class="ml-3">@TaskViewModel.TagName</small>
+            </MudCardActions>
+        }
+    </MudCard>
+</li>
+
+
+@code {
+    #region Parameters
+
+    [CascadingParameter]
+    TaskContainer Container { get; set; }
+
+    [Parameter]
+    public TaskViewModel TaskViewModel { get; set; }
+
+    #endregion
+
+    #region Events
+
+    private void HandleDragStart(TaskViewModel selectedTask)
+    {
+        Container.Payload = selectedTask;
+    }
+
+    private async Task OnClick()
+    {
+        await Container.OnClickCallback.InvokeAsync(TaskViewModel);
+    }
+
+    #endregion
+}

@@ -1,0 +1,145 @@
+﻿@page "/tasks"
+@using MyTasks.Models.ViewModels;
+@inherits AuthBaseComponent
+@inject IDialogService DialogService
+
+<PageTitle>Tasks</PageTitle>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudButton Variant="Variant.Filled"
+                       EndIcon="@Icons.Material.Filled.Add"
+                       OnClick="OnCreateClick">Create a Task</MudButton>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <TaskContainer Tasks="TaskViewModels"
+                       OnStatusUpdated="HandleStatusUpdated"
+                       OnClickCallback="ViewTaskDetail">
+            @foreach (var taskColumn in Columns)
+            {
+                <TaskList TaskColumn="taskColumn" AllowedColumns="Columns.Where(item=>item.Id != taskColumn.Id).Select(item=>item.Id).ToArray()" />
+            }
+        </TaskContainer>
+    </MudCardContent>
+</MudCard>
+
+
+@code {
+    #region Variables
+
+    List<TaskViewModel> TaskViewModels = new List<TaskViewModel>();
+    string lastUpdatedJob = "";
+
+    private TaskViewModel SelectedTask { get; set; } = new();
+
+    private string ActionType
+    {
+        get
+        {
+            return $"{(SelectedTask.Id == Guid.Empty ? "New" : "Edit")} Task";
+        }
+    }
+
+    private IList<TaskColumnViewModel> Columns = new List<TaskColumnViewModel>();
+
+    #endregion
+
+    #region Events
+
+    protected async override Task OnInitializedAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            await LoadData();
+        });
+    }
+
+    private void HandleStatusUpdated(TaskViewModel updatedTask)
+    {
+        lastUpdatedJob = updatedTask.Description;
+    }
+
+    private async Task OnCreateClick()
+    {
+        SelectedTask = new();
+        await ShowTaskDialog();
+    }
+
+    #endregion
+
+    #region Methods & Functions
+
+    private async Task LoadData()
+    {
+        await LoadTaskColumns();
+        await LoadTasks();
+    }
+
+    private async Task LoadTaskColumns()
+    {
+        var columnModels = await UnitOfWork.TaskColumn.GetAsync(
+        filter: model => model.CreatedBy == UserId,
+        orderBy: model => model.OrderBy(model => model.Position));
+        Columns = new List<TaskColumnViewModel>();
+        foreach (var tag in columnModels)
+        {
+            Columns.Add(TaskColumnViewModel.FromEntity(tag));
+        }
+    }
+
+    private async Task LoadTasks()
+    {
+        var tasks = await UnitOfWork.Task.GetAsync(filter: model => model.CreatedBy == UserId && !model.IsArchived);
+        TaskViewModels = TaskViewModel.FromEntities(tasks).ToList();
+
+        var tags = await UnitOfWork.TaskTag.GetAsync(filter: model => model.CreatedBy == UserId);
+        foreach (var task in TaskViewModels)
+        {
+            if (task.TaskTagId == null) continue;
+
+            var tag = tags.FirstOrDefault(model => model.Id == task.TaskTagId);
+            if (tag != null)
+            {
+                task.TagName = tag.Name;
+            }
+        }
+    }
+
+    private async Task ShowTaskDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("SelectedTask", SelectedTask);
+
+        var options = new DialogOptions()
+            {
+                CloseButton = false,
+                FullWidth = true,
+                DisableBackdropClick = true,
+                MaxWidth = MaxWidth.Medium
+            };
+        var dialog = DialogService.Show<SaveTaskDialog>(ActionType, parameters, options);
+        var result = await dialog.Result;
+        await DialogClickCallback(!result.Canceled);
+    }
+
+    private async Task DialogClickCallback(bool isSubmitted)
+    {
+        if (isSubmitted)
+        {
+            await LoadData();
+            StateHasChanged();
+        }
+    }
+
+    private async Task ViewTaskDetail(TaskViewModel selectedTask)
+    {
+        if (selectedTask == null) return;
+
+        SelectedTask = selectedTask;
+        await ShowTaskDialog();
+    }
+
+    #endregion
+}

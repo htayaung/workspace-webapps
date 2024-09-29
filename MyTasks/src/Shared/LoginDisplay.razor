@@ -1,0 +1,31 @@
+﻿<AuthorizeView>
+    <Authorized>
+        <MudMenu Icon="@Icons.Material.Filled.Person">
+            <MudMenuItem>
+                <MudButton Href="Identity/Account/Manage"
+                           Color="Color.Transparent">
+                    Profile
+                </MudButton>
+            </MudMenuItem>
+            <MudMenuItem>
+                <form method="post" action="Identity/Account/Logout">
+                    <button type="submit" class="nav-link btn btn-link">Log out</button>
+                </form>
+            </MudMenuItem>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudButton Href="Identity/Account/Register"
+                   Variant="Variant.Outlined"
+                   Color="Color.Primary"
+                   Class="mr-3">
+            Register
+        </MudButton>
+
+        <MudButton Href="Identity/Account/Login"
+                   Variant="Variant.Outlined"
+                   Color="Color.Primary">
+            Log in
+        </MudButton>
+    </NotAuthorized>
+</AuthorizeView>

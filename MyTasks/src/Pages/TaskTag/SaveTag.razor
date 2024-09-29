@@ -1,0 +1,120 @@
+﻿@using MyTasks.Models.ViewModels;
+@attribute [Authorize]
+@inherits AuthBaseComponent
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@ActionType</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <EditForm Model="@tag" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Name*"
+                                          @bind-Value="tag.Name"
+                                          For="@(() => tag.Name)"
+                                          @ref="referenceTagName"
+                                          OnlyValidateIfDirty="true" />
+
+                            <MudTextField Label="Hex Code"
+                                          HelperText="#FFFFFF"
+                                          @bind-Value="tag.HexCode"
+                                          For="@(() => tag.HexCode)" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="ml-auto">Save</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudCardContent>
+</MudCard>
+
+
+@code {
+    #region Parameters
+
+    [Parameter]
+    public TaskTagViewModel Tag { get; set; } = new();
+
+    [Parameter]
+    public bool SetFocus { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmitCallback { get; set; }
+
+    #endregion
+
+    #region Variables
+
+    private TaskTagViewModel tag = new();
+
+    private bool IsNewRecord = true;
+
+    private string ActionType
+    {
+        get
+        {
+            return $"{(IsNewRecord ? "New" : "Edit")} Tag";
+        }
+    }
+
+    private MudTextField<string> referenceTagName;
+
+    #endregion
+
+    #region Events
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Initialize();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await ExecuteAsync(async () =>
+        {
+            if (IsNewRecord)
+            {
+                UnitOfWork.TaskTag.Insert(tag.ToEntity(), UserId);
+            }
+            else
+            {
+                UnitOfWork.TaskTag.Update(tag.ToEntity(), UserId);
+            }
+
+            UnitOfWork.Save();
+            StateHasChanged();
+
+            await OnSubmitCallback.InvokeAsync();
+        });
+    }
+
+    #endregion
+
+    #region Methods & Functions
+
+    private void Initialize()
+    {
+        IsNewRecord = Tag.Id == Guid.Empty;
+        Tag.CopyTo(tag);
+
+        if (SetFocus && referenceTagName != null)
+        {
+            referenceTagName.FocusAsync();
+        }
+    }
+
+    #endregion
+}

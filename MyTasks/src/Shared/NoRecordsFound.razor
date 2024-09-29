@@ -1,0 +1,14 @@
+﻿<MudText Typo="Typo.h5" Align="Align.Center">@displayText</MudText>
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+
+    private string displayText
+    {
+        get
+        {
+            return string.IsNullOrEmpty(Text) ? "No Records Found" : Text;
+        }
+    }
+}

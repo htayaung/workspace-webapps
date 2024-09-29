@@ -1,0 +1,125 @@
+﻿@using MyTasks.Models.ViewModels;
+@attribute [Authorize]
+@inherits AuthBaseComponent
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@ActionType</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <EditForm Model="@column" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudTextField Label="Name*"
+                                          @bind-Value="column.Name"
+                                          For="@(() => column.Name)"
+                                          @ref="referenceColumnName"
+                                          OnlyValidateIfDirty="true" />
+
+                            <MudTextField Label="Color Code"
+                                          HelperText="#FFFFFF"
+                                          @bind-Value="column.Color"
+                                          For="@(() => column.Color)" />
+
+                            <MudTextField Label="Position"
+                                          InputType="InputType.Number"
+                                          @bind-Value="column.Position"
+                                          For="@(() => column.Position)" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="ButtonType.Submit"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="ml-auto">Save</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudCardContent>
+</MudCard>
+
+
+@code {
+    #region Parameters
+
+    [Parameter]
+    public TaskColumnViewModel Column { get; set; } = new();
+
+    [Parameter]
+    public bool SetFocus { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmitCallback { get; set; }
+
+    #endregion
+
+    #region Variables
+
+    private TaskColumnViewModel column = new();
+
+    private bool IsNewRecord = true;
+
+    private string ActionType
+    {
+        get
+        {
+            return $"{(IsNewRecord ? "New" : "Edit")} Column";
+        }
+    }
+
+    private MudTextField<string> referenceColumnName;
+
+    #endregion
+
+    #region Events
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Initialize();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await ExecuteAsync(async () =>
+        {
+            if (IsNewRecord)
+            {
+                UnitOfWork.TaskColumn.Insert(column.ToEntity(), UserId);
+            }
+            else
+            {
+                UnitOfWork.TaskColumn.Update(column.ToEntity(), UserId);
+            }
+
+            UnitOfWork.Save();
+            StateHasChanged();
+
+            await OnSubmitCallback.InvokeAsync();
+        });
+    }
+
+    #endregion
+
+    #region Methods & Functions
+
+    private void Initialize()
+    {
+        IsNewRecord = Column.Id == Guid.Empty;
+        Column.CopyTo(column);
+
+        if (SetFocus && referenceColumnName != null)
+        {
+            referenceColumnName.FocusAsync();
+        }
+    }
+
+    #endregion
+}

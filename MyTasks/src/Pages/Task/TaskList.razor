@@ -1,0 +1,79 @@
+﻿@using MyTasks.Models.ViewModels
+
+<div class="job-status">
+    <h3>@TaskColumn.Name (@Tasks.Count())</h3>
+
+    <ul class="dropzone @dropClass"
+        ondragover="event.preventDefault();"
+        ondragstart="event.dataTransfer.setData('', event.target.id);"
+        @ondrop="HandleDrop"
+        @ondragenter="HandleDragEnter"
+        @ondragleave="HandleDragLeave">
+
+        @foreach (var task in Tasks)
+        {
+            <TaskView TaskViewModel="task" />
+        }
+    </ul>
+</div>
+
+
+@code {
+    #region Parameters
+
+    [CascadingParameter]
+    TaskContainer Container { get; set; }
+
+    [Parameter]
+    public TaskColumnViewModel TaskColumn { get; set; }
+
+    [Parameter]
+    public Guid[] AllowedColumns { get; set; }
+
+    #endregion
+
+    #region Variables
+
+    List<TaskViewModel> Tasks = new List<TaskViewModel>();
+    string dropClass = "";
+
+    #endregion
+
+    #region Events
+
+    protected override void OnParametersSet()
+    {
+        Tasks.Clear();
+        Tasks.AddRange(Container.Tasks.Where(x => x.TaskColumnId == TaskColumn.Id));
+    }
+
+    private void HandleDragEnter()
+    {
+        if (TaskColumn.Id == Container.Payload.TaskColumnId) return;
+
+        if (AllowedColumns != null && !AllowedColumns.Contains(Container.Payload.TaskColumnId))
+        {
+            dropClass = "no-drop";
+        }
+        else
+        {
+            dropClass = "can-drop";
+        }
+    }
+
+    private void HandleDragLeave()
+    {
+        dropClass = "";
+    }
+
+    private async Task HandleDrop()
+    {
+        dropClass = "";
+
+        if (AllowedColumns != null && !AllowedColumns.Contains(Container.Payload.TaskColumnId)) return;
+
+        await Container.UpdateTaskAsync(TaskColumn.Id);
+    }
+
+    #endregion
+}

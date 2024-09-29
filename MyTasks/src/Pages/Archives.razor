@@ -1,0 +1,79 @@
+﻿@page "/archive"
+@inherits AuthBaseComponent
+@using MyTasks.Models.ViewModels
+@using ThreadTask = System.Threading.Tasks
+
+<PageTitle>Archives</PageTitle>
+
+@if (ArchivedTasks.Count > 0)
+{
+    @foreach (var task in ArchivedTasks)
+    {
+        <MudCard Outlined="true" Class="mb-2">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">@task.Name</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <small>Last updated on: @task.LastUpdatedOn.ToString("dd/M/yy hh:mm.ss tt")</small>
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>@((MarkupString)task.Description)</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    @if (!string.IsNullOrEmpty(task.TagName))
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Label" Color="Color.Default" Size="Size.Small" />
+                    <small class="ml-3">@task.TagName</small>
+                }
+
+                <MudButton Variant="Variant.Filled"
+                   StartIcon="@Icons.Material.Filled.Delete"
+                   Color="Color.Error"
+                   Class="ml-auto"
+                   @onclick="()=>OnDeleteClick(task.Id)">Delete</MudButton>
+            </MudCardActions>
+        </MudCard>
+    }
+}
+else
+{
+    <NoRecordsFound />
+}
+
+@code {
+    List<TaskViewModel> ArchivedTasks = new List<TaskViewModel>();
+
+    protected async override ThreadTask.Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async ThreadTask.Task LoadData()
+    {
+        var tasks = await UnitOfWork.Task.GetAsync(filter: model => model.CreatedBy == UserId && model.IsArchived);
+        ArchivedTasks = TaskViewModel.FromEntities(tasks).ToList();
+
+        var tags = await UnitOfWork.TaskTag.GetAsync(filter: model => model.CreatedBy == UserId);
+        foreach (var task in ArchivedTasks)
+        {
+            if (task.TaskTagId == null) continue;
+
+            var tag = tags.FirstOrDefault(model => model.Id == task.TaskTagId);
+            if (tag != null)
+            {
+                task.TagName = tag.Name;
+            }
+        }
+    }
+
+    private async ThreadTask.Task OnDeleteClick(Guid taskId)
+    {
+        UnitOfWork.Task.Delete(taskId, UserId);
+        UnitOfWork.Save();
+
+        await LoadData();
+        StateHasChanged();
+    }
+}
