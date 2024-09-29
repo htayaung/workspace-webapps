@@ -1,0 +1,8 @@
+﻿INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp], [IsActive], [Created], [CreatedBy], [LastModified], [LastModifiedBy]) VALUES (N'895b6c53-3706-43da-edc7-08dc5321c089', N'SystemAdministrator', N'SYSTEMADMINISTRATOR', NULL, 1, CAST(N'2024-04-02T14:32:31.820' AS DateTime), N'00000000-0000-0000-0000-000000000000', NULL, NULL)
+GO
+INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp], [IsActive], [Created], [CreatedBy], [LastModified], [LastModifiedBy]) VALUES (N'48a38ccf-fa27-4c5f-b89d-08dc5321e760', N'Administrator', N'ADMINISTRATOR', NULL, 1, CAST(N'2024-04-02T14:33:43.473' AS DateTime), N'00000000-0000-0000-0000-000000000000', NULL, NULL)
+GO
+INSERT [dbo].[AspNetUsers] ([Id], [UserName], [DisplayName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount], [IsActive], [Created], [CreatedBy], [LastModified], [LastModifiedBy]) VALUES (N'0ae2daa8-22bb-4222-7ce4-08dc53298b53', N'administrator@htayaung.dev', N'Administrator', N'ADMINISTRATOR@HTAYAUNG.DEV', N'administrator@htayaung.dev', N'ADMINISTRATOR@HTAYAUNG.DEV', 0, N'AQAAAAIAAYagAAAAECq2HAOLZ+YRjUAKMFOa+VMXViJf75XUae+M8xF5uDNwUZFIUZr4RvD97YsxN8MNLw==', N'C2AWVXFWMAUQDQL77S57EJFP623LYMDF', N'1a0c197a-8a10-443a-899d-3286a0acb3f3', NULL, 0, 0, CAST(N'2024-04-11T16:48:40.5850836+00:00' AS DateTimeOffset), 1, 0, 1, CAST(N'2024-04-02T15:28:27.397' AS DateTime), N'00000000-0000-0000-0000-000000000000', NULL, NULL)
+GO
+INSERT [dbo].[AspNetUserRoles] ([UserId], [RoleId]) VALUES (N'0ae2daa8-22bb-4222-7ce4-08dc53298b53', N'48a38ccf-fa27-4c5f-b89d-08dc5321e760')
+GO
